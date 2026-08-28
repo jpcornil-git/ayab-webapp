@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AYAB - All Yarns Are Beautiful</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <img src="assets/images/ayab_logo.png" alt="Ayab logo">
+            </div>
+            <nav class="app-nav">
+                <ul>
+                    <li><a href="#" data-tab="main" class="nav-link active">Home</a></li>
+                    <li><a href="#" data-tab="settings" class="nav-link">Settings</a></li>
+                    <li><a href="#" data-tab="about" class="nav-link">About</a></li>
+                </ul>
+            </nav>
+        </header>
+        <!-- Main Panel -->
+        <main class="app-main">
+            <div class="container">
+                <!-- Main Tab -->
+                <section id="main-tab" class="tab-content active">
+                    <div class="layout-grid">
+                        <!-- Status Panel -->
+                        <aside class="panel panel-status">
+                            <div class="panel-header">Machine Status</div>
+                            <div class="status-display">
+                                <div class="status-item">
+                                    <span class="status-label">Connection:</span>
+                                    <span id="connection-status" class="status-value disconnected"></span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">State:</span>
+                                    <span id="machine-state" class="status-value"></span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">Progress:</span>
+                                    <span id="machine-progress" class="status-value"></span>
+                                </div>
+                            </div>
+                            <div class="panel-header">Port Selection</div>
+                            <div class="control-section">
+                                <div class="option-group field">
+                                    <select id="interface-select" class="interface-select">
+                                        <option value="serial" selected>Serial Port</option>
+                                        <option value="websocket">WebSocket</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="panel-header">Settings</div>
+                            <div class="control-section">
+                                <div class="option-group field">
+                                    <label for="mode-select">Knitting Mode:</label>
+                                    <select id="mode-select">
+                                        <option value="SINGLEBED" selected>Singlebed</option>
+                                        <option value="CLASSIC_RIBBER">Ribber: Classic</option>
+                                        <option value="MIDDLECOLORSTWICE_RIBBER">Ribber: Middle-Colors-Twice</option>
+                                        <option value="HEARTOFPLUTO_RIBBER">Ribber: Heart of Pluto</option>
+                                        <option value="CIRCULAR_RIBBER">Ribber: Circular</option>
+                                    </select>
+                                </div>
+                                <div class="option-group field">
+                                    <label for="color-count">Colors:</label>
+                                    <select id="color-count">
+                                        <option value="2" selected>2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                    </select>
+                                </div>
+                                <div class="option-group field">
+                                    <label for="start-row">Start Row:</label>
+                                    <input id="start-row" type="number" min="1" value="1">
+                                </div>
+                                <div class="option-group">
+                                    <label for="infinite-repeat">Infinite Repeat:</label>
+                                    <input id="infinite-repeat" type="checkbox">
+                                </div>
+                                <div class="needle-row">
+                                    <div class="needle-group">
+                                        <label for="start-needle">Start needle:</label>
+                                        <div class="needle-controls">
+                                            <select id="start-needle-side">
+                                                <option value="left" selected>Left</option>
+                                                <option value="right">Right</option>
+                                            </select>
+                                            <input id="start-needle" type="number" value="1">
+                                        </div>
+                                    </div>
+                                    <div class="needle-group">
+                                        <label for="stop-needle">Stop needle:</label>
+                                        <div class="needle-controls">
+                                            <select id="stop-needle-side">
+                                                <option value="left">Left</option>
+                                                <option value="right" selected>Right</option>
+                                            </select>
+                                            <input id="stop-needle" type="number" value="1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="option-group field">
+                                    <label for="alignment">Alignment:</label>
+                                    <select id="alignment">
+                                        <option value="left" selected>Left</option>
+                                        <option value="center">Center</option>
+                                        <option value="right">Right</option>
+                                    </select>
+                                </div>
+                                <div class="option-group knit-side-group">
+                                    <div class="knit-side-row">
+                                        <label for="knit-side-image">Knit Side Image:</label>
+                                        <input id="knit-side-image" type="checkbox">
+                                    </div>
+                                    <div class="knit-side-preview-wrapper">
+                                        <span id="knit-side-preview" class="knit-side-preview">e</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-header">Actions</div>
+                            <div class="control-section">
+                                <div class="button-group">
+                                    <div class="action-row">
+                                        <button id="btn-knit" class="btn btn-knit" disabled>Knit</button>
+                                    </div>
+                                    <button id="btn-cancel" class="btn btn-cancel" disabled>Cancel</button>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Main Content Area -->
+                        <section class="panel panel-content">
+                            <div class="panel-header">Pattern</div>
+                            <!-- Pattern Preview -->
+                            <div class="pattern-preview-section">
+                                <input type="file" id="pattern-file" accept="image/*,.pat,.bin" style="display: none;">
+                                <div class="canvas-toolbar canvas-toolbar-top">
+                                    <button class="btn btn-small" id="btn-browse" title="Browse File">Browse</button>                                
+                                    <button class="btn btn-small" id="btn-clear-pattern" title="Clear Pattern" disabled>Clear</button>
+                                    <button class="btn btn-small" id="btn-fit-canvas" title="Fit to Canvas" disabled>Fit</button>
+                                    <span class="zoom-info" id="zoom-info"></span>
+                                </div>
+                                <div class="canvas-viewport-wrapper">
+                                    <div class="slider-h-container" id="slider-h-container" style="display: none;">
+                                        <label for="pattern-slider-h" class="slider-label">X:</label>
+                                        <input type="range" id="pattern-slider-h" class="pattern-slider pattern-slider-h" min="0" max="100" value="0" title="Horizontal Scroll">
+                                    </div>
+                                    <div class="canvas-relative-container">
+                                        <div class="slider-v-container" id="slider-v-container" style="display: none;">
+                                            <input type="range" id="pattern-slider-v" class="pattern-slider pattern-slider-v" min="0" max="100" value="0" title="Vertical Scroll">
+                                        </div>
+                                        <canvas id="pattern-canvas" class="pattern-canvas" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                                <div class="canvas-toolbar canvas-toolbar-bottom">
+                                    <span class="canvas-info" id="canvas-info">No pattern loaded</span>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+                <!-- Settings Tab -->
+                <section id="settings-tab" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">Settings</div>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="machine-select">Machine Type:</label>
+                                <select id="machine-select">
+                                    <option value="KH910" selected>Brother KH910</option>
+                                    <option value="KH930">Brother KH930</option>
+                                    <option value="KH270">Brother KH270</option>
+                                </select>
+                            </div>
+                            <div class="option-group">                                
+                                <input id="software-audio" type="checkbox" checked>
+                                <label for="software-audio">Application audio:</label>
+                            </div>
+                            <div class="option-group">
+                                <input id="hardware-beep" type="checkbox" checked> 
+                                <label for="hardware-beep">Hardware beep:</label>
+                            </div>
+                            <div class="option-group">
+                                <input id="continuous-reporting" type="checkbox">
+                                <label for="continuous-reporting">Continuous reporting:</label>
+                            </div>                            
+                            <div class="form-group">
+                                <label for="language-select">Language:</label>
+                                <select id="language-select">
+                                    <option value="en">English</option>
+                                    <option value="de">Deutsch</option>
+                                    <option value="fr">Français</option>
+                                </select>
+                            </div>
+                            <button id="btn-save-settings" class="btn btn">Save Settings</button>
+                        </div>
+                    </div>
+                </section>
+                <!-- About Tab -->
+                <section id="about-tab" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">About AYAB</div>
+                        <div class="about-content">
+                            <h3>AYAB - All Yarns Are Beautiful</h3>
+                            <p>Web version of the knitting machine control software</p>
+                            <p><strong>Version:</strong> <span id="app-version">1.0.0</span></p>
+                            <p><strong>Built with:</strong> TypeScript, HTML5, CSS3</p>
+                            <div class="about-info">
+                                <h4>Useful links:</h4>
+                                <ul>
+                                    <li><a href="https://manual.ayab-knitting.com" target="_blank">Manuals</a></li>
+                                    <li><a href="https://www.ayab-knitting.com/ayab-hardware" target="_blank">Interface & Shields</a></li>
+                                    <li>GitHub repositories
+                                        <ul>
+                                            <li><a href="https://github.com/jpcornil-git/ayab-webapp" target="_blank">WebApp</a></li>
+                                            <li><a href="https://github.com/jpcornil-git/ayabAsync-firmware" target="_blank">Firmware</a></li>
+                                            <li><a href="https://github.com/AllYarnsAreBeautiful/ayab-patterns" target="_blank">Patterns</a></li>
+                                            <li><a href="https://github.com/AllYarnsAreBeautiful/ayab-hardware" target="_blank">Hardware</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+        <!-- Console Panel -->
+        <div id="console-panel" class="console-panel">
+            <div class="console-header">Console
+                <button class="btn btn-small" id="btn-clear-console" title="Clear console">Clear</button>
+            </div>                
+            <div id="console-output" class="console-output" aria-live="polite"></div>
+        </div>
+        <footer class="app-footer">
+            <p>&copy; 2026 AYAB Project. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module" src="dist/main.js"></script>
+</body>
+</html>

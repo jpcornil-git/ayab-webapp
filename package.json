@@ -1,0 +1,31 @@
+{
+  "name": "ayab-web",
+  "version": "1.0.0",
+  "description": "Web-based control software for AYAB knitting machines",
+  "type": "module",
+  "files": [
+    "dist",
+    "assets"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "serve": "python3 -m http.server 8000",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "knitting",
+    "ayab",
+    "machine",
+    "web",
+    "websocket",
+    "webserial"
+  ],
+  "author": "AYAB Contributors",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.21.1"
+  }
+}
