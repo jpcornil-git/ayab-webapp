@@ -113,7 +113,7 @@ body {
 /* Layout Grid */
 .layout-grid {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 300px minmax(0, 1fr);
     gap: var(--spacing-lg);
 }
 
@@ -145,8 +145,15 @@ body {
     top: 0;
 }
 
+@media (max-width: 1024px) {
+    .panel-status {
+        position: static;
+    }
+}
+
 .panel-content {
     min-height: 400px;
+    min-width: 0;
 }
 
 /* Status Display */
@@ -391,6 +398,7 @@ body {
     background-color: var(--color-surface-variant);
     border-radius: var(--radius-sm);
     align-content: center;
+    flex-wrap: wrap;
 }
 
 .canvas-toolbar-top {
