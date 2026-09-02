@@ -141,9 +141,19 @@
                             <div class="pattern-preview-section">
                                 <input type="file" id="pattern-file" accept="image/*,.pat,.bin" style="display: none;">
                                 <div class="canvas-toolbar canvas-toolbar-top">
-                                    <button class="btn btn-small" id="btn-browse" title="Browse File">Browse</button>                                
-                                    <button class="btn btn-small" id="btn-clear-pattern" title="Clear Pattern" disabled>Clear</button>
-                                    <button class="btn btn-small" id="btn-fit-canvas" title="Fit to Canvas" disabled>Fit</button>
+                                    <div class="pattern-file-tools">
+                                        <button class="btn btn-small" id="btn-browse" title="Browse File">Browse</button>
+                                        <button class="btn btn-small" id="btn-clear-pattern" title="Clear Pattern" disabled>Clear</button>
+                                        <button class="btn btn-small" id="btn-fit-canvas" title="Fit to Canvas" disabled>Fit</button>
+                                    </div>
+                                    <div class="pattern-transform-tools">
+                                        <button class="btn btn-small" id="btn-pattern-invert" title="Invert pattern" disabled>Invert</button>
+                                        <button class="btn btn-small" id="btn-pattern-stretch" title="Stretch pattern" disabled>Stretch</button>
+                                        <button class="btn btn-small" id="btn-pattern-repeat" title="Repeat pattern" disabled>Repeat</button>
+                                        <button class="btn btn-small" id="btn-pattern-reflect" title="Reflect pattern" disabled>Reflect</button>
+                                        <button class="btn btn-small" id="btn-pattern-flip" title="Flip pattern" disabled>Flip</button>
+                                        <button class="btn btn-small" id="btn-pattern-rotate" title="Rotate pattern" disabled>Rotate</button>
+                                    </div>
                                     <span class="zoom-info" id="zoom-info"></span>
                                 </div>
                                 <div class="canvas-viewport-wrapper">

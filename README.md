@@ -33,7 +33,6 @@ You can zoom and pan the pattern (while knitting as well) using the mouse center
 
 ## Future Enhancements
 
-- [ ] Add pattern manipulation (match ayab-desktop "Image Actions") 
 - [ ] Report indState data (hall sensors, carriage type/direction, ...)
 - [ ] Add ayab-esp32 utilities (only when running on esp32/UnoR4)
 - [ ] Support for multiple langages

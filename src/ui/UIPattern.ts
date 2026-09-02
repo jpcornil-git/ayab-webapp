@@ -1,8 +1,10 @@
 import { ActiveNeedles, KnittingConfig, MachineState } from '../shared/states.types.js';
 import { KnittingMachine } from '../components/KnittingMachine.js';
 import { PatternContainer } from '../components/PatternContainer.js';
+import { PatternTool } from '../components/PatternTools.js';
 import { UIPatternVisualizer } from './UIPatternVisualizer.js';
 import { MachineWidthMap } from '../shared/machine.types.js';
+import { Dialog } from '../utils/Dialog.js';
 
 export class UIPattern {
     private _machine: KnittingMachine;
@@ -16,6 +18,12 @@ export class UIPattern {
     private _btnBrowse: HTMLButtonElement;
     private _btnClear: HTMLButtonElement;
     private _btnFit: HTMLButtonElement;
+    private _btnPatternInvert: HTMLButtonElement;
+    private _btnPatternStretch: HTMLButtonElement;
+    private _btnPatternRepeat: HTMLButtonElement;
+    private _btnPatternReflect: HTMLButtonElement;
+    private _btnPatternFlip: HTMLButtonElement;
+    private _btnPatternRotate: HTMLButtonElement;
 
     private _visualizer: UIPatternVisualizer;
 
@@ -34,6 +42,14 @@ export class UIPattern {
         // Zoom management
         this._zoomInfo = this.getElement('zoom-info');
         this._btnFit = this.getElement('btn-fit-canvas') as HTMLButtonElement;
+        // Pattern processing
+        this._btnPatternInvert = this.getElement('btn-pattern-invert') as HTMLButtonElement;
+        this._btnPatternStretch = this.getElement('btn-pattern-stretch') as HTMLButtonElement;
+        this._btnPatternRepeat = this.getElement('btn-pattern-repeat') as HTMLButtonElement;
+        this._btnPatternReflect = this.getElement('btn-pattern-reflect') as HTMLButtonElement;
+        this._btnPatternFlip = this.getElement('btn-pattern-flip') as HTMLButtonElement;
+        this._btnPatternRotate = this.getElement('btn-pattern-rotate') as HTMLButtonElement;
+
         // Info elements
         this._canvasInfo = this.getElement('canvas-info');
         // Pattern drawing
@@ -76,6 +92,12 @@ export class UIPattern {
         this._btnBrowse.disabled = isRunning;
         this._btnClear.disabled = isRunning;
         this._btnFit.disabled = !this._pattern.isLoaded;
+        this._btnPatternInvert.disabled = !this._pattern.isLoaded;
+        this._btnPatternStretch.disabled = !this._pattern.isLoaded;
+        this._btnPatternRepeat.disabled = !this._pattern.isLoaded;
+        this._btnPatternReflect.disabled = !this._pattern.isLoaded;
+        this._btnPatternFlip.disabled = !this._pattern.isLoaded;
+        this._btnPatternRotate.disabled = !this._pattern.isLoaded;
     }
 
     private knittingConfigChanged (config: KnittingConfig): void {
@@ -101,6 +123,49 @@ export class UIPattern {
         this._btnBrowse.addEventListener('click', () => this._fileInput.click());
         this._btnClear.addEventListener('click', () => this.clear());
         this._fileInput.addEventListener('change', () => this.handleFileSelect());
+
+        // Pattern processing
+        this._btnPatternInvert.addEventListener('click', () => this._pattern.tool.invert());
+        this._btnPatternStretch.addEventListener('click', async () => {
+            const values = await Dialog.showForm('Stretch pattern', [
+                { name: 'horizontalScale', label: 'Horizontal scale', type: 'number', value: '1', min: '0.01' },
+                { name: 'verticalScale', label: 'Vertical scale', type: 'number', value: '1', min: '0.01' },
+            ]);
+            if (values) this._pattern.tool.stretch(Number(values.horizontalScale), Number(values.verticalScale));
+        });
+        this._btnPatternRepeat.addEventListener('click', async () => {
+            const values = await Dialog.showForm('Repeat pattern', [
+                { name: 'horizontalCount', label: 'Horizontal repeats', type: 'number', value: '2', min: '1', step: '1' },
+                { name: 'verticalCount', label: 'Vertical repeats', type: 'number', value: '2', min: '1', step: '1' },
+            ]);
+            if (values) this._pattern.tool.repeat(Number(values.horizontalCount), Number(values.verticalCount));
+        });
+        this._btnPatternReflect.addEventListener('click', async () => {
+            const values = await Dialog.showForm('Reflect pattern', [{
+                name: 'edge', label: 'Mirror edge', type: 'select', value: 'right',
+                options: [
+                    { value: 'left', label: 'Left' },
+                    { value: 'right', label: 'Right' },
+                    { value: 'top', label: 'Top' },
+                    { value: 'bottom', label: 'Bottom' },
+                ],
+            }]);
+            if (values) this._pattern.tool.reflect(values.edge as 'left' | 'right' | 'top' | 'bottom');
+        });
+        this._btnPatternFlip.addEventListener('click', async () => {
+            const values = await Dialog.showForm('Flip pattern', [{
+                name: 'direction', label: 'Direction', type: 'select', value: 'horizontal',
+                options: [{ value: 'horizontal', label: 'Horizontal' }, { value: 'vertical', label: 'Vertical' }],
+            }]);
+            if (values) this._pattern.tool.flip(values.direction as 'horizontal' | 'vertical');
+        });
+        this._btnPatternRotate.addEventListener('click', async () => {
+            const values = await Dialog.showForm('Rotate pattern', [{
+                name: 'direction', label: 'Direction', type: 'select', value: 'right',
+                options: [{ value: 'right', label: 'Right (clockwise)' }, { value: 'left', label: 'Left (counter-clockwise)' }],
+            }]);
+            if (values) this._pattern.tool.rotate(values.direction as 'left' | 'right');
+        });
 
         // Drag and drop support for the canvas
         this._canvas.addEventListener('dragover', (e) => {

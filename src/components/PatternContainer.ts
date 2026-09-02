@@ -1,5 +1,12 @@
 import { ActiveNeedles } from "../shared/states.types.js";
 import { EventEmitter } from "../utils/EventEmitter.js";
+import { PatternTool } from "./PatternTools.js";
+
+export type RgbImage = {
+    width: number;
+    height: number;
+    data: ImageDataArray;
+};
 /**
 * @property FREQUENCY : From highest to lowest frequency
 * @property INTENSITY : From darkest to brightest 
@@ -11,19 +18,21 @@ export enum OrderModeBy {
 
 export class PatternContainer extends EventEmitter {
     
-    private _width!: number;
-    private _height!: number;
-
-    private _rgbData!: ImageDataArray | null;
+    private _rgbImage!: RgbImage | null;
     private _indexedData!: Uint8Array | null;
     private _rgbPalette!: Array<[number, number, number]> | null;
     private _activeNeedles!: ActiveNeedles | null;
+    private _patternTool: PatternTool;
 
     private _isLoaded: boolean = false;
     private _isMirrored: boolean = false;
 
     constructor() {
         super();
+        this._patternTool = new PatternTool(
+            () => this._rgbImage,
+            this.replaceImageData.bind(this)
+        );
         this.clear();
     }   
 
@@ -45,15 +54,19 @@ export class PatternContainer extends EventEmitter {
     }
 
     get width(): number {
-        return this._width;
+        return this._rgbImage?.width ?? 0;
     }
 
     get height(): number {
-        return this._height;
+        return this._rgbImage?.height ?? 0;
     }
     
     get nColors(): number {
         return this._rgbPalette ? this._rgbPalette.length : 0;
+    }
+
+    get tool(): PatternTool {
+        return this._patternTool;
     }
 
     get activeNeedles() : ActiveNeedles | null{
@@ -74,13 +87,17 @@ export class PatternContainer extends EventEmitter {
     public clear() {
         this._isLoaded = false;
         this._isMirrored = false;
-        this._width = 0;
-        this._height = 0;
-        this._rgbData = null;
+        this._rgbImage = null;
         this._indexedData = null;
         this._rgbPalette = null;
         this._activeNeedles = null;
         this.emit('patternChanged', null);
+    }
+
+    private replaceImageData(width: number, height: number, data: ImageDataArray): void {
+        const nColors = this._rgbPalette?.length ?? 2;
+        this._rgbImage = { width, height, data };
+        this.quantizeImage(nColors);
     }
 
     /**
@@ -90,9 +107,9 @@ export class PatternContainer extends EventEmitter {
      * @returns The color index or null if out of bounds.
      */
     public getColorIndex(x: number, y: number): number | null {
-        if (this._isMirrored) x = this._width - 1 -x;
-        if (this._indexedData && x >= 0 && x < this._width && y >= 0 && y < this._height) {
-            return this._indexedData[y * this._width + x];
+        if (this._isMirrored) x = this.width - 1 -x;
+        if (this._indexedData && x >= 0 && x < this.width && y >= 0 && y < this.height) {
+            return this._indexedData[y * this.width + x];
         }
         return null;
     }
@@ -136,9 +153,7 @@ export class PatternContainer extends EventEmitter {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        this._width = canvas.width;
-        this._height = canvas.height;
-        this._rgbData = imageData.data;
+        this._rgbImage = { width: canvas.width, height: canvas.height, data: imageData.data };
     }
 
     /**
@@ -189,8 +204,8 @@ export class PatternContainer extends EventEmitter {
       maxIterations: number = 10,
       backgroundColor: [number, number, number] = [255, 255, 255]
     ) {
-        const totalPixels = this._width * this._height;
-        if (totalPixels === 0 || !this._rgbData || nColors <= 0) {
+        const totalPixels = this.width * this.height;
+        if (totalPixels === 0 || !this._rgbImage || nColors <= 0) {
             this.clear();
             throw new Error('PatternContainer: No image data to quantize or invalid parameters.');
             return ;
@@ -206,10 +221,10 @@ export class PatternContainer extends EventEmitter {
             const srcIdx = i * 4;
             const dstIdx = i * 3;
         
-            const r = this._rgbData[srcIdx];
-            const g = this._rgbData[srcIdx + 1];
-            const b = this._rgbData[srcIdx + 2];
-            const a = this._rgbData[srcIdx + 3] / 255; // Normalize alpha [0, 1]
+            const r = this._rgbImage.data[srcIdx];
+            const g = this._rgbImage.data[srcIdx + 1];
+            const b = this._rgbImage.data[srcIdx + 2];
+            const a = this._rgbImage.data[srcIdx + 3] / 255; // Normalize alpha [0, 1]
         
             // Alpha blending over background
             rgbData[dstIdx]     = Math.round(r * a + bgR * (1 - a));
