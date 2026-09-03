@@ -464,8 +464,14 @@ export class KnittingMachine extends EventEmitter {
             });
 
             await audioPlayer.queueAudio('nextline.wav', 0.8);
+            const memoData = pattern.memoData(currentRowNumber);
             const colorName = colorToString(color);
-            console.log(`Row ${pattern.height - currentRowNumber}, color = ${colorName}, pattern=${packedBitArrayToString(lineData, {one:colorName})}`);                
+            if (memoData !== null) {
+                console.log(`Row ${pattern.height - currentRowNumber}, color = ${colorName} [${memoData == 0 ? ' ' : memoData}], pattern=${packedBitArrayToString(lineData, {one:colorName})}`);
+            } else {
+                console.log(`Row ${pattern.height - currentRowNumber}, color = ${colorName}, pattern=${packedBitArrayToString(lineData, {one:colorName})}`);
+            }
+            
         }
         // Done
         await audioPlayer.queueAudio('finish.wav', 0.8);

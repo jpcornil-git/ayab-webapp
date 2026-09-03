@@ -1,5 +1,6 @@
 import { ActiveNeedles } from "../shared/states.types.js";
 import { EventEmitter } from "../utils/EventEmitter.js";
+import { MemoData } from "./MemoData.js";
 import { PatternTool } from "./PatternTools.js";
 
 export type RgbImage = {
@@ -23,6 +24,7 @@ export class PatternContainer extends EventEmitter {
     private _rgbPalette!: Array<[number, number, number]> | null;
     private _activeNeedles!: ActiveNeedles | null;
     private _patternTool: PatternTool;
+    private _memoData: number [] | null = null;
 
     private _isLoaded: boolean = false;
     private _isMirrored: boolean = false;
@@ -129,12 +131,25 @@ export class PatternContainer extends EventEmitter {
     }
 
     /**
+     * Gets the memo data associated with a row of the pattern.
+     * @returns The memo data as a number or null if not set.
+     */
+    public memoData(y: number): number | null {
+        if (this._memoData && y >= 0 && y < this._memoData.length) {
+            return this._memoData[y];
+        }
+        return null;
+    }
+
+    /**
+     */
+    /**
      * Convert image to pattern data
      * @param img The image element to convert
      * @param maxWidth The maximum width of the pattern (default: 200)
      * @returns An object containing the width, height, and pixel data of the pattern
      */
-    public updateImage(img: HTMLImageElement, maxWidth: number = 200) {
+    public updateImage(img: HTMLImageElement, memo: number[] | null = null, maxWidth: number = 200) {
         this.clear();
 
         // Create canvas to draw image and get pixel data
@@ -154,6 +169,7 @@ export class PatternContainer extends EventEmitter {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
         this._rgbImage = { width: canvas.width, height: canvas.height, data: imageData.data };
+        this._memoData = memo;
     }
 
     /**

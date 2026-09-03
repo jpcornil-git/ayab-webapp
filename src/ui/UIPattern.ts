@@ -5,6 +5,7 @@ import { PatternTool } from '../components/PatternTools.js';
 import { UIPatternVisualizer } from './UIPatternVisualizer.js';
 import { MachineWidthMap } from '../shared/machine.types.js';
 import { Dialog } from '../utils/Dialog.js';
+import { MemoData } from '../components/MemoData.js';
 
 export class UIPattern {
     private _machine: KnittingMachine;
@@ -237,8 +238,8 @@ export class UIPattern {
         if (this._fileInput.files?.length) {
             this._canvasInfo.textContent = 'Loading pattern...';
             try {
-                const image = await this.loadImage(this._fileInput.files[0]);
-                this._pattern.updateImage(image);
+                const [image, memo] = await this.loadImage(this._fileInput.files[0]);
+                this._pattern.updateImage(image, memo);
                 this._pattern.quantizeImage(this._nColors, 10);
                 this._visualizer.autoZoom();
                 this.updateZoomInfo();
@@ -252,20 +253,36 @@ export class UIPattern {
         }
     }
 
-    private async loadImage(file: File): Promise<HTMLImageElement> {
+    private async loadImage(file: File): Promise<[HTMLImageElement, number[] | null]> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
 
-            reader.onload = async (e) => {
+            reader.onload = async (e: ProgressEvent<FileReader>) => {
                 try {
+                    const buffer = e.target?.result as ArrayBuffer;
+                    
+                    // Extract memo data if any
+                    let memo = null;
+                    if (buffer && file.type === 'image/png') {
+                        const memoString = MemoData.extractPngComment(buffer);
+                        if (memoString) {
+                            memo = MemoData.parseString(memoString);
+                        }
+                    }
+
+                    // Create an HTMLImageElement
                     const img = new Image();
+                    // Convert ArrayBuffer to Blob and then to Object URL (as with readAsDataURL)
+                    const blob = new Blob([buffer], { type: file.type });
+                    img.src = URL.createObjectURL(blob);
+
                     img.onload = () => {
-                        resolve(img);
+                        resolve([img, memo]);
                     };
                     img.onerror = () => {
                         reject(new Error(`Error while loading image ${file.name}`));
                     };
-                    img.src = e.target?.result as string;
+
                 } catch (error) {
                     reject(error);
                 }
@@ -275,7 +292,7 @@ export class UIPattern {
                 reject(new Error(`Failed to read file: ${file.name}`));
             };
 
-            reader.readAsDataURL(file);
+            reader.readAsArrayBuffer(file);
         });
     }
 
