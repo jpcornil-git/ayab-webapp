@@ -196,7 +196,7 @@ export class UIMachine {
                 if (cfg.language) this.languageSelect.value = cfg.language;
                 if (cfg.machine) this.machineSelect.value = cfg.machine;
                 if (cfg.mode) this.modeSelect.value = BedMode[cfg.mode];
-                if (cfg.softwareAudio !== undefined) this.softwareAudioCheckbox.checked = cfg.sofwareAudio;
+                if (cfg.softwareAudio !== undefined) this.softwareAudioCheckbox.checked = cfg.softwareAudio;
                 if (cfg.hardwareBeep !== undefined) this.hardwareBeepCheckbox.checked = cfg.hardwareBeep;
                 if (cfg.continuousReporting !== undefined) this.continuousReportingCheckbox.checked = cfg.continuousReporting;                
             }
