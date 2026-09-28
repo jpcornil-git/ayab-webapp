@@ -5,6 +5,10 @@ export class UIConsole {
         this.element = document.getElementById(elementId);
         if (this.element) {
             this.setupInterception();
+            const clearButton = document.getElementById('btn-clear-console');
+            if (clearButton) {
+                clearButton.addEventListener('click', () => this.clear());
+            }
         }
     }
 

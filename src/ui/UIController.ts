@@ -8,14 +8,12 @@ import { WebSocketCommunication } from '../communication/websocket.js';
 import { MachineState, ActiveNeedles } from '../shared/states.types.js';
 import { UIMachine } from './UIMachine.js';
 import { UIPattern } from './UIPattern.js';
-import { UIConsole } from './UIConsole.js';
 import { PatternContainer } from '../components/PatternContainer.js';
 
 export class UIController {
     // Sub-controllers
     private _uiMachine: UIMachine;
     private _uiPattern: UIPattern;
-    private _uiConsole: UIConsole;
 
     // UI Elements
     private _navLinks: NodeListOf<HTMLElement>;
@@ -35,7 +33,6 @@ export class UIController {
         this._lastWebsocketURI = null;
 
         // Initialize sub-controllers
-        this._uiConsole = new UIConsole('console-output');
         this._uiPattern = new UIPattern(this._machine, this._pattern);
         this._uiMachine = new UIMachine(this._machine);
 
@@ -74,11 +71,6 @@ export class UIController {
             this._uiMachine.syncKnittingConfig();
             this.updateUI();
         });
-
-        const btnCLearConsole = this.getElement('btn-clear-console') as HTMLButtonElement;
-        btnCLearConsole.addEventListener("click", (e) => {
-            this._uiConsole.clear();
-        })
 
         this.updateUI();
     } 
