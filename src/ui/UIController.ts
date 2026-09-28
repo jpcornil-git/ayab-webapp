@@ -122,6 +122,11 @@ export class UIController {
         if (tab) {
             tab.classList.add('active');
         }
+
+        // Dispatch a custom app event for tab change
+        document.dispatchEvent(new CustomEvent('ayab-webapp:tab-changed', {
+            detail: { tabName }
+        }));        
     }
 
     // Knit button callback
