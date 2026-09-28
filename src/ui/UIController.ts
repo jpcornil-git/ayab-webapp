@@ -162,7 +162,7 @@ export class UIController {
             } else if (iface === 'websocket') {
                 // Prompt for websocket URI
                 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-                const defaultHost = this._lastWebsocketURI || `${protocol}//${window.location.hostname}:8080`;
+                const defaultHost = this._lastWebsocketURI || `${protocol}//${window.location.hostname}/ws`;
            
                 let uri = prompt('Enter WebSocket URI:', defaultHost);
                 if (!uri) {
