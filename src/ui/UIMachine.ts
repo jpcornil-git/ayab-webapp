@@ -154,6 +154,11 @@ export class UIMachine {
     public syncKnittingConfig(): void {
             this.machine.setKnittingConfig(this.getKnittingConfig());
             this.machineModel.textContent = this.machineSelect.value;
+            if (this.continuousReportingCheckbox.checked) {
+                this.getElement('ind-state-panel').style.display = "grid";
+            } else {
+                this.getElement('ind-state-panel').style.display = "none";
+            }
     }
 
     public getKnittingConfig(): KnittingConfig {
