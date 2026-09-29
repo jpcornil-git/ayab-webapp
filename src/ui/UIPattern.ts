@@ -3,7 +3,14 @@ import { KnittingMachine } from '../components/KnittingMachine.js';
 import { PatternContainer } from '../components/PatternContainer.js';
 import { PatternTool } from '../components/PatternTools.js';
 import { UIPatternVisualizer } from './UIPatternVisualizer.js';
-import { MachineWidthMap } from '../shared/machine.types.js';
+import {
+    BellShift,
+    CarriageDirectionMap,
+    CarriageDirection,
+    CarriageTypeMap,
+    MachineWidthMap,
+} from '../shared/machine.types.js';
+import { indStateMessage } from '../communication/API6.js';
 import { Dialog } from '../utils/Dialog.js';
 import { MemoData } from '../components/MemoData.js';
 
@@ -16,6 +23,7 @@ export class UIPattern {
     private _fileInput: HTMLInputElement;
     private _canvasInfo: HTMLElement;
     private _zoomInfo: HTMLElement;
+    private _indStateValues: Record<string, HTMLElement>;
     private _btnBrowse: HTMLButtonElement;
     private _btnClear: HTMLButtonElement;
     private _btnFit: HTMLButtonElement;
@@ -53,6 +61,16 @@ export class UIPattern {
 
         // Info elements
         this._canvasInfo = this.getElement('canvas-info');
+        this._indStateValues = {
+            carriage: this.getElement('ind-state-carriage'),
+            beltshift: this.getElement('ind-state-beltshift'),
+            hallLeft: this.getElement('ind-state-hall-left'),
+            directionLeft: this.getElement('ind-state-direction-left'),
+            position: this.getElement('ind-state-position'),
+            directionRight: this.getElement('ind-state-direction-right'),
+            hallRight: this.getElement('ind-state-hall-right'),
+        };
+        this._machine.on('indStateChanged', (indState: indStateMessage) => this.updateIndState(indState));
         // Pattern drawing
         this._visualizer = new UIPatternVisualizer(this._canvas, this._pattern);
 
@@ -87,6 +105,27 @@ export class UIPattern {
 
     private updateZoomInfo(): void {
         this._zoomInfo.textContent = this._visualizer.getPatternInfo();
+    }
+
+    private updateIndState(indState: indStateMessage): void {
+        const mappedValue = (map: Record<string, number>, value: number): string =>
+            Object.entries(map).find(([, mapped]) => mapped === value)?.[0] ?? String(value);
+
+        this._indStateValues.carriage.textContent = mappedValue(CarriageTypeMap, indState.carriageType);
+        this._indStateValues.beltshift.textContent = `(${BellShift[indState.beltshift] ?? indState.beltshift})`;
+        this._indStateValues.hallLeft.textContent = String(indState.hallValueLeft);
+        this._indStateValues.position.textContent = `${indState.carriagePosition}`;
+        this._indStateValues.hallRight.textContent = String(indState.hallValueRight);
+        if (mappedValue(CarriageDirectionMap, indState.carriageDirection) === CarriageDirection.LEFT) {
+            this._indStateValues.directionLeft.classList.add('direction-active');
+            this._indStateValues.directionRight.classList.remove('direction-active');
+        } else if (mappedValue(CarriageDirectionMap, indState.carriageDirection) === CarriageDirection.RIGHT) {
+            this._indStateValues.directionLeft.classList.remove('direction-active');
+            this._indStateValues.directionRight.classList.add('direction-active');
+        }
+        const hallActive = indState.hallActive !== 0;
+        this._indStateValues.hallLeft.classList.toggle('hall-active', hallActive);
+        this._indStateValues.hallRight.classList.toggle('hall-active', hallActive);
     }
 
     public updateControls(isRunning: boolean): void {

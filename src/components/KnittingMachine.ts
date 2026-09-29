@@ -202,6 +202,12 @@ export class KnittingMachine extends EventEmitter {
                 try {
                     const parsed = this.api!.api_parse_message(frame);
                     this.parsedFrames.push(parsed);
+                    if (parsed.token === Token.indState && parsed.msg) {
+                        const indState = this.api!.parseIndStateMessage(parsed.msg);
+                        if (indState) {
+                            this.emit('indStateChanged', indState);
+                        }
+                    }
                     this.emit('frameReceived', parsed);
                     //console.log('Rx message:', parsed.token, parsed.arg1, frame);
                 } catch (e) {
@@ -403,10 +409,11 @@ export class KnittingMachine extends EventEmitter {
         const rowCounter = new RollingCounter(256);
         while (true) {
             const reqLineFrame = await this.waitForFrame(
-                p => p.token === Token.reqLine,
+                // indState are consumed here
+                p => p.token === Token.reqLine || p.token === Token.indState,
                 1000
             );
-            if (!reqLineFrame) {
+            if (!reqLineFrame || reqLineFrame.token === Token.indState) {
                 if (this.cancelRequested) {
                     throw new KnitCancelledError();
                 }

@@ -8,6 +8,7 @@ export class UIMachine {
     private connectionStatus: HTMLElement;
     private machineStateDisplay: HTMLElement;
     private progressDisplay: HTMLElement;
+    private machineModel: HTMLElement;
 
     // Knitting config controls
     private machineSelect: HTMLSelectElement;
@@ -37,6 +38,7 @@ export class UIMachine {
         this.connectionStatus = this.getElement('connection-status');
         this.machineStateDisplay = this.getElement('machine-state');
         this.progressDisplay = this.getElement('machine-progress');
+        this.machineModel = this.getElement('machine-model');
 
         // Initialize controls elements
         this.machineSelect = this.getElement('machine-select') as HTMLSelectElement;
@@ -151,6 +153,7 @@ export class UIMachine {
 
     public syncKnittingConfig(): void {
             this.machine.setKnittingConfig(this.getKnittingConfig());
+            this.machineModel.textContent = this.machineSelect.value;
     }
 
     public getKnittingConfig(): KnittingConfig {

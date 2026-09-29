@@ -155,6 +155,26 @@
                                         <button class="btn btn-small" id="btn-pattern-rotate" title="Rotate pattern" disabled>Rotate</button>
                                     </div>
                                     <span class="zoom-info" id="zoom-info"></span>
+                                </div>                           
+                                <div class="ind-state-panel" id="ind-state-panel" aria-live="polite">
+                                    <section class="ind-state ind-state-general" aria-label="General machine information">
+                                        <span class="ind-state-text">
+                                            <b>Machine:</b>
+                                            <span id="machine-model">[model]</span>
+                                        </span>
+                                        <span class="ind-state-text">
+                                            <b>Carriage:</b>
+                                            <span id="ind-state-carriage">[carriage]</span>
+                                            <span class="ind-state-value" id="ind-state-beltshift">([belt shift])</span>
+                                        </span>
+                                    </section>
+                                    <section class="ind-state ind-state-bed" aria-label="Bed information">
+                                        <span class="ind-state-value ind-state-hall" id="ind-state-hall-left">[hall left]</span>
+                                        <span class="ind-state-direction ind-state-direction" id="ind-state-direction-left">&lt;</span>
+                                        <span class="ind-state-value" id="ind-state-position">[position]</span>
+                                        <span class="ind-state-direction ind-state-direction" id="ind-state-direction-right">&gt;</span>
+                                        <span class="ind-state-value ind-state-hall" id="ind-state-hall-right">[hall right]</span>
+                                    </section>
                                 </div>
                                 <div class="canvas-viewport-wrapper">
                                     <div class="slider-h-container" id="slider-h-container" style="display: none;">
@@ -170,7 +190,7 @@
                                 </div>
                                 <div class="canvas-toolbar canvas-toolbar-bottom">
                                     <span class="canvas-info" id="canvas-info">No pattern loaded</span>
-                                </div>
+                                </div>                                     
                             </div>
                         </section>
                     </div>

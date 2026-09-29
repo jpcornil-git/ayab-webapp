@@ -28,6 +28,20 @@ export interface ParsedFrame {
     arg1: number;
 }
 
+export interface indStateMessage {
+  token: number;
+  error: number;
+  state: number;
+  hallValueLeft: number;
+  hallValueRight: number;
+  carriageType: number;
+  carriagePosition: number;
+  carriageDirection: number;
+  hallActive: number;
+  beltshift: number;
+  crc: number;
+}
+
 /**
  * Concatenate two Uint8Arrays
  * @param {Uint8Array} a - The first Uint8Array
@@ -111,6 +125,29 @@ export class API6 extends EventEmitter {
             }
         }
         return { msg, token: Token.unknown, arg1: 0 };
+    }
+
+    parseIndStateMessage(msg: Uint8Array): indStateMessage | null {
+        if (msg.length < 13) {
+            return null;
+        }
+
+        return {
+            token:             msg[0],
+            error:             msg[1],
+            state:             msg[2],
+            
+            // 16b big-Endian values for hall sensors
+            hallValueLeft:     (msg[3] << 8) | msg[4],
+            hallValueRight:    (msg[5] << 8) | msg[6],
+            
+            carriageType:      msg[7],
+            carriagePosition:  msg[8],
+            carriageDirection: msg[9],
+            hallActive:        msg[10],
+            beltshift:         msg[11],
+            crc:               msg[12],
+        };
     }
 
     // API6 helper methods
