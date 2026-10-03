@@ -381,7 +381,7 @@ export class KnittingMachine extends EventEmitter {
         }
 
         let audioPlayer = new AudioPlayer('assets/sounds/', !config.softwareAudio);        
-        await audioPlayer.queueAudio('start.wav', 0.8);
+        await audioPlayer.queueAudio('start.m4a', 0.8);
 
         // Send req_start for confirmation
         const startNeedle = this.getNeedlePosition(config.startNeedle, config.startNeedleSide)!;
@@ -470,7 +470,7 @@ export class KnittingMachine extends EventEmitter {
                 numberOfRow:passesPerRow*(pattern.height-config.startRow+1)
             });
 
-            await audioPlayer.queueAudio('nextline.wav', 0.8);
+            await audioPlayer.queueAudio('nextline.m4a', 0.8);
             const memoData = pattern.memoData(currentRowNumber);
             const colorName = colorToString(color);
             if (memoData !== null) {
@@ -481,7 +481,7 @@ export class KnittingMachine extends EventEmitter {
             
         }
         // Done
-        await audioPlayer.queueAudio('finish.wav', 0.8);
+        await audioPlayer.queueAudio('finish.m4a', 0.8);
         console.log(`Pattern transfer completed (${rowCounter.currentValue} rows sent)`);
     }
 }
